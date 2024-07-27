@@ -1,0 +1,226 @@
+import React, { useState } from 'react';
+
+const estilos = {
+  contenedor: { fontFamily: 'Arial, sans-serif', maxWidth: '1200px', margin: '0 auto', padding: '20px' },
+  titulo: { fontSize: '24px', textAlign: 'center', color: 'white', backgroundColor: '#2c3e50', padding: '10px' },
+  navegacion: { display: 'flex', backgroundColor: '#3498db', marginBottom: '20px' },
+  navItem: { padding: '10px 20px', color: 'white', cursor: 'pointer' },
+  seccion: { backgroundColor: 'white', padding: '20px', borderRadius: '5px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' },
+  tabla: { width: '100%', borderCollapse: 'collapse' },
+  th: { backgroundColor: '#3498db', color: 'white', padding: '10px', textAlign: 'left' },
+  td: { padding: '10px', borderBottom: '1px solid #ddd' },
+  input: { width: '100%', padding: '8px', marginBottom: '10px' },
+  boton: { padding: '8px 16px', backgroundColor: '#3498db', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' },
+  estado: { padding: '5px 10px', borderRadius: '3px', fontWeight: 'bold' },
+  alDia: { backgroundColor: '#2ecc71', color: 'white' },
+  pendiente: { backgroundColor: '#f39c12', color: 'white' }
+};
+
+const SistemaGestionInmobiliaria = () => {
+  const [seccionActiva, setSeccionActiva] = useState('inquilinos');
+  const [busqueda, setBusqueda] = useState('');
+
+  // Datos de ejemplo (reemplazar con los datos del PDF)
+  const inquilinos = [
+    { id: 1, nombre: 'Juan Pérez', departamento: 'A101', estado: 'AL DÍA' },
+    { id: 2, nombre: 'María González', departamento: 'B205', estado: 'PENDIENTE' },
+    { id: 3, nombre: 'Carlos Rodríguez', departamento: 'C310', estado: 'AL DÍA' },
+  ];
+
+  const alquileres = [
+    { id: 1, departamento: 'A101', inquilino: 'Juan Pérez', monto: 800, vencimiento: '31 de mayo de 2023' },
+    { id: 2, departamento: 'B205', inquilino: 'María González', monto: 750, vencimiento: '4 de junio de 2023' },
+    { id: 3, departamento: 'C310', inquilino: 'Carlos Rodríguez', monto: 900, vencimiento: '9 de junio de 2023' },
+  ];
+
+  const egresos = [
+    { id: 1, descripcion: 'Mantenimiento ascensor', monto: 500, categoria: 'Mantenimiento', fecha: '14 de mayo de 2023' },
+    { id: 2, descripcion: 'Pintura fachada', monto: 1200, categoria: 'Reparaciones', fecha: '19 de mayo de 2023' },
+    { id: 3, descripcion: 'Pago servicios', monto: 300, categoria: 'Servicios', fecha: '24 de mayo de 2023' },
+  ];
+
+  const balance = {
+    saldoInicial: 5000,
+    ingresosTotales: 2450,
+    egresosTotales: 2000,
+    saldoCobrar: 750,
+    estimacionFutura: 6200
+  };
+
+  const renderSeccion = () => {
+    switch (seccionActiva) {
+      case 'inquilinos':
+        return (
+          <div>
+            <h2>Seguimiento de Inquilinos</h2>
+            <input 
+              type="text" 
+              placeholder="Buscar inquilinos..." 
+              style={estilos.input}
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+            <table style={estilos.tabla}>
+              <thead>
+                <tr>
+                  <th style={estilos.th}>NOMBRE</th>
+                  <th style={estilos.th}>DEPARTAMENTO</th>
+                  <th style={estilos.th}>ESTADO DE PAGO</th>
+                  <th style={estilos.th}>ACCIONES</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inquilinos.filter(i => 
+                  i.nombre.toLowerCase().includes(busqueda.toLowerCase()) || 
+                  i.departamento.toLowerCase().includes(busqueda.toLowerCase())
+                ).map(inquilino => (
+                  <tr key={inquilino.id}>
+                    <td style={estilos.td}>{inquilino.nombre}</td>
+                    <td style={estilos.td}>{inquilino.departamento}</td>
+                    <td style={estilos.td}>
+                      <span style={{
+                        ...estilos.estado,
+                        ...(inquilino.estado === 'AL DÍA' ? estilos.alDia : estilos.pendiente)
+                      }}>
+                        {inquilino.estado}
+                      </span>
+                    </td>
+                    <td style={estilos.td}>
+                      <button style={estilos.boton}>VER DETALLES</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case 'alquileres':
+        return (
+          <div>
+            <h2>Gestión de Alquileres</h2>
+            <input 
+              type="text" 
+              placeholder="Buscar alquileres..." 
+              style={estilos.input}
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+            <table style={estilos.tabla}>
+              <thead>
+                <tr>
+                  <th style={estilos.th}>DEPARTAMENTO</th>
+                  <th style={estilos.th}>INQUILINO</th>
+                  <th style={estilos.th}>MONTO</th>
+                  <th style={estilos.th}>VENCIMIENTO</th>
+                </tr>
+              </thead>
+              <tbody>
+                {alquileres.filter(a => 
+                  a.departamento.toLowerCase().includes(busqueda.toLowerCase()) || 
+                  a.inquilino.toLowerCase().includes(busqueda.toLowerCase())
+                ).map(alquiler => (
+                  <tr key={alquiler.id}>
+                    <td style={estilos.td}>{alquiler.departamento}</td>
+                    <td style={estilos.td}>{alquiler.inquilino}</td>
+                    <td style={estilos.td}>${alquiler.monto}</td>
+                    <td style={estilos.td}>{alquiler.vencimiento}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case 'egresos':
+        return (
+          <div>
+            <h2>Registro de Egresos</h2>
+            <input 
+              type="text" 
+              placeholder="Buscar egresos..." 
+              style={estilos.input}
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+            <table style={estilos.tabla}>
+              <thead>
+                <tr>
+                  <th style={estilos.th}>DESCRIPCIÓN</th>
+                  <th style={estilos.th}>MONTO</th>
+                  <th style={estilos.th}>CATEGORÍA</th>
+                  <th style={estilos.th}>FECHA</th>
+                </tr>
+              </thead>
+              <tbody>
+                {egresos.filter(e => 
+                  e.descripcion.toLowerCase().includes(busqueda.toLowerCase()) || 
+                  e.categoria.toLowerCase().includes(busqueda.toLowerCase())
+                ).map(egreso => (
+                  <tr key={egreso.id}>
+                    <td style={estilos.td}>{egreso.descripcion}</td>
+                    <td style={estilos.td}>${egreso.monto}</td>
+                    <td style={estilos.td}>{egreso.categoria}</td>
+                    <td style={estilos.td}>{egreso.fecha}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case 'balance':
+        return (
+          <div>
+            <h2>Balance Financiero</h2>
+            <table style={estilos.tabla}>
+              <thead>
+                <tr>
+                  <th style={estilos.th}>CONCEPTO</th>
+                  <th style={estilos.th}>MONTO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style={estilos.td}>Saldo Inicial</td>
+                  <td style={estilos.td}>${balance.saldoInicial}</td>
+                </tr>
+                <tr>
+                  <td style={estilos.td}>Ingresos Totales</td>
+                  <td style={estilos.td}>${balance.ingresosTotales}</td>
+                </tr>
+                <tr>
+                  <td style={estilos.td}>Egresos Totales</td>
+                  <td style={estilos.td}>${balance.egresosTotales}</td>
+                </tr>
+                <tr>
+                  <td style={estilos.td}>Saldo a Cobrar</td>
+                  <td style={estilos.td}>${balance.saldoCobrar}</td>
+                </tr>
+                <tr>
+                  <td style={estilos.td}>Estimación Futura</td>
+                  <td style={estilos.td}>${balance.estimacionFutura}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div style={estilos.contenedor}>
+      <h1 style={estilos.titulo}>Sistema de Gestión Inmobiliaria</h1>
+      <nav style={estilos.navegacion}>
+        <div style={estilos.navItem} onClick={() => setSeccionActiva('inquilinos')}>Inquilinos</div>
+        <div style={estilos.navItem} onClick={() => setSeccionActiva('alquileres')}>Alquileres</div>
+        <div style={estilos.navItem} onClick={() => setSeccionActiva('egresos')}>Egresos</div>
+        <div style={estilos.navItem} onClick={() => setSeccionActiva('balance')}>Balance</div>
+      </nav>
+      <div style={estilos.seccion}>
+        {renderSeccion()}
+      </div>
+    </div>
+  );
+};
+
+export default SistemaGestionInmobiliaria;
